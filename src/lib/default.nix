@@ -1,11 +1,34 @@
-{ lib, pkgs, name, ... }:
+{
+  lib,
+  pkgs,
+  name,
+  ...
+}:
 let
   types = (import ./types.nix { inherit lib; });
 in
-{
+rec {
   match = str: defs: defs.${str} or defs.default;
 
   percentage = x: (toString (x * 100)) + "%";
+
+  mkOption =
+    args@{ applies, description, ... }:
+    lib.mkOption (
+      removeAttrs args [ "applies" ]
+      // {
+        description = description + "\n\nApplies to: " + lib.concatStringsSep ", " applies;
+      }
+    );
+
+  mkNullableOption =
+    { type, ... }@args:
+    mkOption (
+      args
+      // {
+        type = lib.types.nullOr type;
+      }
+    );
 
   mkProvideContextOptions = lib.mkOption {
     description = "Provide context options for ${name}.";

@@ -1,8 +1,8 @@
 { ... }: {
   imports = [
-    ./backends/niri.nix
-    ./backends/umbriel.nix
+    ./backends/niri
+    ./backends/umbriel
     ./options/default.nix
-    ./options/keybinding.nix
+    ./options/keybinds.nix
   ];
 }

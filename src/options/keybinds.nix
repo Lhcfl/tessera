@@ -158,7 +158,7 @@ let
       };
 in
 {
-  options.tessera.settings.keybinding = lib.mkOption {
+  options.tessera.settings.keybinds = lib.mkOption {
     default = { };
     description = "binds <key> to actions";
 
