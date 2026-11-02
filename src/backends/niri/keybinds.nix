@@ -14,7 +14,7 @@ let
   inherit (niri) n;
 
   inherit
-    (import ../lib {
+    (import ../../lib {
       inherit lib pkgs;
       name = "niri";
     })

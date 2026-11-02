@@ -13,11 +13,19 @@ rec {
   percentage = x: (toString (x * 100)) + "%";
 
   mkOption =
-    args@{ applies, description, ... }:
+    args@{
+      applies ? null,
+      description,
+      ...
+    }:
     lib.mkOption (
       removeAttrs args [ "applies" ]
       // {
-        description = description + "\n\nApplies to: " + lib.concatStringsSep ", " applies;
+        description =
+          if applies != null then
+            description + "\n\nApplies to: " + lib.concatStringsSep ", " applies
+          else
+            description;
       }
     );
 

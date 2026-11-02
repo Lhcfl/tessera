@@ -9,7 +9,7 @@ let
   umbriel-cfg = config.tessera.umbriel;
 
   inherit
-    (import ../lib {
+    (import ../../lib {
       inherit lib pkgs;
       name = "umbriel";
     })

@@ -10,7 +10,7 @@ let
   toml = pkgs.formats.toml { };
 
   inherit
-    (import ../lib {
+    (import ../../lib {
       inherit lib pkgs;
       name = "umbriel";
     })
@@ -27,6 +27,8 @@ let
     ];
 in
 {
+  imports = [ ./window-rule.nix ];
+
   options.tessera.umbriel = {
     enable = lib.mkEnableOption "unified compositor settings for Umbriel";
     provide = mkProvideContextOptions;

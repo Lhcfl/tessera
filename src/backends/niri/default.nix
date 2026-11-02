@@ -14,7 +14,7 @@ let
   inherit (niri) n raw;
 
   inherit
-    (import ../lib {
+    (import ../../lib {
       inherit lib pkgs;
       name = "niri";
     })
@@ -60,6 +60,7 @@ in
           (n "layout" [
             (n "preset-column-widths" (map (n "proportion") cfg.layout.preset-column-widths))
           ])
+          (import ./window-rule.nix margs)
           (rmap niri-cfg.includes (item: n "include" { optional = item.optional; } item.source))
         ]
       );
