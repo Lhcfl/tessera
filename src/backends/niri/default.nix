@@ -61,6 +61,7 @@ in
             (n "preset-column-widths" (map (n "proportion") cfg.layout.preset-column-widths))
           ])
           (import ./window-rule.nix margs)
+          (import ./layer-rule.nix margs)
           (rmap niri-cfg.includes (item: n "include" { optional = item.optional; } item.source))
         ]
       );

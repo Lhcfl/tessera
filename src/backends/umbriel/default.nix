@@ -27,7 +27,10 @@ let
     ];
 in
 {
-  imports = [ ./window-rule.nix ];
+  imports = [
+    ./window-rule.nix
+    ./layer-rule.nix
+  ];
 
   options.tessera.umbriel = {
     enable = lib.mkEnableOption "unified compositor settings for Umbriel";

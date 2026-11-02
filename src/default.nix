@@ -5,5 +5,6 @@
     ./options/default.nix
     ./options/keybinds.nix
     ./options/window-rule.nix
+    ./options/layer-rule.nix
   ];
 }
