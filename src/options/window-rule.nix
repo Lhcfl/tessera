@@ -283,11 +283,6 @@ let
     with lib.types;
     submodule {
       options = {
-        xray = mkNullableOption {
-          applies = [ "niri" ];
-          type = bool;
-          description = "Enable or disable the xray background effect.";
-        };
         noise = mkNullableOption {
           applies = [ "niri" ];
           type = float;
@@ -595,7 +590,10 @@ in
             description = "Floating size as a fraction of the output's usable area.";
           };
           default_scrolling_extent_px = mkNullableOption {
-            applies = [ "umbriel" ];
+            applies = [
+              "niri"
+              "umbriel"
+            ];
             type = int;
             description = "Initial logical-pixel extent along the scrolling strip, up to 4 viewports. Takes precedence over default_scrolling_extent.";
           };
@@ -659,7 +657,10 @@ in
             description = "Skip blur below an alpha threshold, from 0.0 to 1.0.";
           };
           blur_optimized = mkNullableOption {
-            applies = [ "umbriel" ];
+            applies = [
+              "niri"
+              "umbriel"
+            ];
             type = bool;
             description = "Override the global optimized-blur choice.";
           };

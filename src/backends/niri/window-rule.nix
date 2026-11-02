@@ -40,11 +40,13 @@ let
     "default_focused"
     "default_column_display"
     "default_scrolling_extent"
+    "default_scrolling_extent_px"
     "default_window_height"
     "default_position"
     "opacity"
     "blur"
     "blur_popups"
+    "blur_optimized"
     "block_capture"
     "focus_on_activate"
     "vrr"
@@ -121,9 +123,10 @@ let
   backgroundEffectBody =
     effect:
     lib.flatten [
-      (node "xray" effect.xray)
-      (node "noise" effect.noise)
-      (node "saturation" effect.saturation)
+      (node "blur" (effect.blur or null))
+      (node "xray" (effect.xray or null))
+      (node "noise" (effect.noise or null))
+      (node "saturation" (effect.saturation or null))
     ];
 
   backgroundEffectNode =
@@ -187,6 +190,11 @@ let
     let
       popups = rule.popups;
       effect = if popups == null then null else popups.background_effect;
+      effectBody = lib.flatten [
+        (node "blur" rule.blur_popups)
+        (node "xray" rule.blur_optimized)
+        (if effect == null then [ ] else backgroundEffectBody effect)
+      ];
       body = lib.flatten [
         (if popups == null then [ ] else node "opacity" popups.opacity)
         (
@@ -197,8 +205,7 @@ let
               multiNode "geometry-corner-radius" popups.geometry_corner_radius
             )
         )
-        (backgroundEffectNode "background-effect" effect)
-        (lib.optional (rule.blur_popups != null) (n "background-effect" [ (n "blur" rule.blur_popups) ]))
+        (lib.optional (effectBody != [ ]) (n "background-effect" effectBody))
       ];
     in
     if body == [ ] then [ ] else bodyNode "popups" body;
@@ -222,14 +229,27 @@ let
       (node "open-focused" rule.default_focused)
       (node "default-column-display" rule.default_column_display)
 
-      (lib.optional (rule.default_scrolling_extent != null) (
-        n "default-column-width" [ (n "proportion" rule.default_scrolling_extent) ]
-      ))
+      (
+        if rule.default_scrolling_extent_px != null then
+          n "default-column-width" [ (n "fixed" rule.default_scrolling_extent_px) ]
+        else if rule.default_scrolling_extent != null then
+          n "default-column-width" [ (n "proportion" rule.default_scrolling_extent) ]
+        else
+          [ ]
+      )
       (columnSizeNode "default-window-height" rule.default_window_height)
       (positionNode rule.default_position)
 
       (node "opacity" rule.opacity)
-      (lib.optional (rule.blur != null) (n "background-effect" [ (n "blur" rule.blur) ]))
+      (backgroundEffectNode "background-effect" (
+        if rule.blur == null && rule.blur_optimized == null then
+          null
+        else
+          {
+            blur = rule.blur;
+            xray = rule.blur_optimized;
+          }
+      ))
       (lib.optional (rule.block_capture == true) (n "block-out-from" "screen-capture"))
       (lib.optional (rule.focus_on_activate != null) (
         n "on-xdg-activate" (if rule.focus_on_activate then "focus" else "set-urgent")

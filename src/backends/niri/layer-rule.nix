@@ -29,6 +29,7 @@ let
   niriApplyKeys = [
     "blur"
     "blur_popups"
+    "blur_optimized"
     "opacity"
     "block_capture"
     "shadow"
@@ -64,7 +65,6 @@ let
   backgroundEffectFields =
     effect:
     lib.flatten [
-      (node "xray" effect.xray)
       (node "noise" effect.noise)
       (node "saturation" effect.saturation)
     ];
@@ -74,6 +74,7 @@ let
     bodyNode "background-effect" (
       lib.flatten [
         (node "blur" rule.blur)
+        (node "xray" rule.blur_optimized)
         (if rule.background_effect == null then [ ] else backgroundEffectFields rule.background_effect)
       ]
     );
@@ -108,6 +109,7 @@ let
       effectBody = lib.flatten [
         (if popupEffect == null then [ ] else backgroundEffectFields popupEffect)
         (node "blur" rule.blur_popups)
+        (node "xray" rule.blur_optimized)
       ];
       body = lib.flatten [
         (if popups == null then [ ] else node "opacity" popups.opacity)

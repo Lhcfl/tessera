@@ -2,6 +2,15 @@
 let
   types = (import ../lib/types.nix { inherit lib; });
 
+  inherit
+    (import ../lib {
+      inherit lib;
+      pkgs = null;
+      name = "options";
+    })
+    mkOption
+    ;
+
   # Action names are umbriel's `umbriel msg` actions, in object-verb form:
   # `window.focus(left)` is written `window-focus = "left"`. Actions that
   # umbriel splits into several commands (`window-focus-left`, …) take the
@@ -10,9 +19,13 @@ let
     (lib.mapAttrs (
       _:
       attrs@{ type, ... }:
-      lib.mkOption (
+      mkOption (
         attrs
         // {
+          applies = [
+            "niri"
+            "umbriel"
+          ];
           type = (lib.types.either type (lib.types.functionTo type)) // {
             description = "the literal or a function that returns the literal, ${type.description}";
           };
@@ -45,6 +58,12 @@ let
           type = types.step;
           description = ''
             Switch to the previous or next workspace on this output
+          '';
+        };
+        workspace-focus-history = {
+          type = types.unit;
+          description = ''
+            Focus the previously focused workspace
           '';
         };
 
@@ -158,7 +177,11 @@ let
       };
 in
 {
-  options.tessera.settings.keybinds = lib.mkOption {
+  options.tessera.settings.keybinds = mkOption {
+    applies = [
+      "niri"
+      "umbriel"
+    ];
     default = { };
     description = "binds <key> to actions";
 
@@ -167,19 +190,42 @@ in
 
       elemType = lib.types.submodule {
         options = {
-          actions = lib.mkOption {
+          actions = mkOption {
+            applies = [
+              "niri"
+              "umbriel"
+            ];
             type = lib.types.attrTag actions;
             description = ''
               The action binds to <key>. You can only select one action.
             '';
           };
 
-          allow-when-locked = lib.mkEnableOption "when locked";
+          allow-when-locked = mkOption {
+            applies = [
+              "niri"
+              "umbriel"
+            ];
+            type = lib.types.bool;
+            default = false;
+            description = "Allow this keybind while the session is locked.";
+          };
 
-          title = lib.mkOption {
+          title = mkOption {
+            applies = [
+              "niri"
+              "umbriel"
+            ];
             default = null;
             type = lib.types.nullOr lib.types.str;
             description = "help menu title";
+          };
+
+          cooldown-ms = mkOption {
+            applies = [ "niri" ];
+            default = null;
+            type = lib.types.nullOr lib.types.ints.unsigned;
+            description = "niri-only: cooldown for repeatable keybinds.";
           };
         };
       };

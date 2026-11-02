@@ -29,8 +29,9 @@ let
       [ "WheelUp" "WheelDown" "WheelLeft" "WheelRight" ]
       [ "WheelScrollUp" "WheelScrollDown" "WheelScrollLeft" "WheelScrollRight" ];
 
+  keybinds = cfg.keybinds // niri-cfg.keybinds;
 in
-lib.flip lib.mapAttrsToList cfg.keybinds (
+lib.flip lib.mapAttrsToList keybinds (
   key: value:
   let
     inherit (value) title allow-when-locked actions;
@@ -38,6 +39,7 @@ lib.flip lib.mapAttrsToList cfg.keybinds (
     params = lib.foldl (acc: x: acc // x) { } [
       (lib.optionalAttrs (allow-when-locked != false) { inherit allow-when-locked; })
       (lib.optionalAttrs (title != null) { hotkey-overlay-title = title; })
+      (lib.optionalAttrs (value.cooldown-ms != null) { cooldown-ms = value.cooldown-ms; })
     ];
 
     body = lib.flip lib.mapAttrsToList actions (
@@ -82,6 +84,8 @@ lib.flip lib.mapAttrsToList cfg.keybinds (
           Previous = n "focus-workspace-up";
           Next = n "focus-workspace-down";
         };
+
+        workspace-focus-history = n "focus-workspace-previous";
 
         window-close = n "close-window";
 

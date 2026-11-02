@@ -35,6 +35,7 @@ rec {
       args
       // {
         type = lib.types.nullOr type;
+        default = null;
       }
     );
 

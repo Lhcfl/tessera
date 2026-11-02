@@ -16,9 +16,10 @@ let
     match
     applyProvides
     ;
+  keybinds = cfg.keybinds // umbriel-cfg.keybinds;
 in
 {
-  config.tessera.umbriel.settings.keybinds = lib.flip lib.mapAttrs cfg.keybinds (
+  config.tessera.umbriel.settings.keybinds = lib.flip lib.mapAttrs keybinds (
     _:
     {
       actions,
@@ -62,6 +63,8 @@ in
           Previous = "workspace-previous";
           Next = "workspace-next";
         };
+
+        workspace-focus-history = "workspace-previous";
 
         window-close = "window-close";
 

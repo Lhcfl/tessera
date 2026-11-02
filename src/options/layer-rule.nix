@@ -28,11 +28,6 @@ let
     with lib.types;
     submodule {
       options = {
-        xray = mkNullableOption {
-          applies = [ "niri" ];
-          type = bool;
-          description = "Enable or disable the xray background effect.";
-        };
         noise = mkNullableOption {
           applies = [ "niri" ];
           type = float;
@@ -232,9 +227,12 @@ in
             description = "Skip blur below an alpha threshold, from 0.0 to 1.0.";
           };
           blur_optimized = mkNullableOption {
-            applies = [ "umbriel" ];
+            applies = [
+              "niri"
+              "umbriel"
+            ];
             type = bool;
-            description = "Override the global optimized-blur choice.";
+            description = "Use the optimized (xray) blur for this surface.";
           };
 
           opacity = mkNullableOption {
