@@ -110,8 +110,10 @@ Home Manager 或别的文件系统抽象上。
 4. **include 的相对路径**：`niri.nix`/`umbriel.nix` 生成的 include 用相对路径
    （如 `tessera/…` 或用户给的 `customize.kdl`），相对的是 compositor 自己的配置
    目录，因此 `out` 必须落在 `~/.config/<compositor>/` 下。
-5. `mkDestination` 里声明 `pkgs`/`config` 参数的 submodule 用的是 Home Manager 的
-   模块参数；在裸 `evalModules` 里手搓测试环境时，需要自己提供 `_module.args.pkgs`。
+5. **submodule 不继承父模块的 `_module.args`**。Home Manager 的 `pkgs` 在
+   `_module.args.pkgs` 而不是 `specialArgs` 里，因此 `lib.types.submodule` 里声明
+   `{ pkgs, ... }` 拿不到它。`mkDestination` 的 `source` 默认值通过 `src/lib` 的
+   外层 `pkgs` 参数词法捕获，不要改回 submodule 参数。
 
 ## 已知问题 / 待办
 

@@ -1,4 +1,4 @@
-{ lib, name, ... }:
+{ lib, pkgs, name, ... }:
 let
   types = (import ./types.nix { inherit lib; });
 in
@@ -23,7 +23,7 @@ in
 
   mkDestination = lib.mkOption {
     type = lib.types.submodule (
-      { config, pkgs, ... }: {
+      { config, ... }: {
         options = {
           target = lib.mkOption {
             description = "The path of the result config file for ${name}. Path to target file relative to HOME.";

@@ -1,4 +1,5 @@
 {
+  pkgs,
   nix-kdl,
   config,
   lib,
@@ -14,7 +15,7 @@ let
 
   inherit
     (import ../lib {
-      inherit lib;
+      inherit lib pkgs;
       name = "niri";
     })
     match

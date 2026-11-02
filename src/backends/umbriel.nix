@@ -11,7 +11,7 @@ let
 
   inherit
     (import ../lib {
-      inherit lib;
+      inherit lib pkgs;
       name = "umbriel";
     })
     match
