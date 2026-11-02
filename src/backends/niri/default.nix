@@ -3,7 +3,6 @@ margs@{
   nix-kdl,
   config,
   lib,
-  options,
   ...
 }:
 let
@@ -153,32 +152,6 @@ in
     out = mkDestination;
     includes = mkIncludes;
 
-    autostart = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [ ];
-      description = "Niri-only commands to spawn at startup, as binary paths or arguments.";
-    };
-
-    xwayland-satellite = lib.mkOption {
-      default = { };
-      description = "Niri Xwayland satellite settings.";
-      type = lib.types.submodule {
-        options = {
-          enable = lib.mkEnableOption "xwayland-satellite integration";
-          path = lib.mkOption {
-            type = lib.types.nullOr lib.types.path;
-            default = null;
-            description = "Path to the xwayland-satellite binary.";
-          };
-        };
-      };
-    };
-
-    keybinds = lib.mkOption {
-      type = options.tessera.settings.keybinds.type;
-      default = { };
-      description = "Niri-only keybinds, merged over tessera.settings.keybinds.";
-    };
   };
 
   config.tessera.niri = {
@@ -189,7 +162,6 @@ in
     out.target = ".config/niri/config.kdl";
     out.text = kdl.formats.v1 (
       lib.flatten [
-        (rmap niri-cfg.autostart (n "spawn-at-startup"))
         (rmap cfg.general.autostart (n "spawn-sh-at-startup"))
         (lib.optional (cfg.appearance.prefer_no_csd == true) (n "prefer-no-csd"))
         (node "screenshot-path" cfg.screenshot.path)
@@ -260,12 +232,6 @@ in
           ]
         ))
         (lib.mapAttrsToList outputNode cfg.outputs)
-        (
-          if niri-cfg.xwayland-satellite.enable then
-            bodyNode "xwayland-satellite" [ (node "path" niri-cfg.xwayland-satellite.path) ]
-          else
-            [ ]
-        )
         (import ./window-rule.nix margs)
         (import ./layer-rule.nix margs)
         (rmap niri-cfg.includes (item: n "include" { optional = item.optional; } item.source))

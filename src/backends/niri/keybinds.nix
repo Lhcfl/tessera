@@ -29,9 +29,8 @@ let
       [ "WheelUp" "WheelDown" "WheelLeft" "WheelRight" ]
       [ "WheelScrollUp" "WheelScrollDown" "WheelScrollLeft" "WheelScrollRight" ];
 
-  keybinds = cfg.keybinds // niri-cfg.keybinds;
 in
-lib.flip lib.mapAttrsToList keybinds (
+lib.flip lib.mapAttrsToList cfg.keybinds (
   key: value:
   let
     inherit (value) title allow-when-locked actions;

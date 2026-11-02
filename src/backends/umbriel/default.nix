@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  options,
   ...
 }:
 let
@@ -41,12 +40,6 @@ in
     provide = mkProvideContextOptions;
     out = mkDestination;
     includes = mkIncludes;
-
-    keybinds = lib.mkOption {
-      type = options.tessera.settings.keybinds.type;
-      default = { };
-      description = "Umbriel-only keybinds, merged over tessera.settings.keybinds.";
-    };
 
     settings = lib.mkOption {
       description = "actual umbriel settings.";
