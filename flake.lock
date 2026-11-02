@@ -1,0 +1,26 @@
+{
+  "nodes": {
+    "nix-kdl": {
+      "locked": {
+        "lastModified": 1791014130,
+        "narHash": "sha256-bK8zm1QxroMbnhOYJAMrDa85mQqaRug1J6NdHiUR2rs=",
+        "owner": "Lhcfl",
+        "repo": "nix-kdl",
+        "rev": "f53cdd251e281a7f2d3d0aed6ee2747f55721475",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Lhcfl",
+        "repo": "nix-kdl",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nix-kdl": "nix-kdl"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

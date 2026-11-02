@@ -6,6 +6,7 @@
 }:
 let
   cfg = config.tessera.settings;
+  niri-cfg = config.tessera.niri;
 
   inherit (nix-kdl) kdl;
   inherit (kdl.extras) niri;
@@ -19,6 +20,8 @@ let
     match
     mkProvideContextOptions
     mkDestination
+    mkIncludes
+    applyProvides
     percentage
     ;
 in
@@ -26,13 +29,13 @@ in
   options.tessera.niri = {
     enable = lib.mkEnableOption "unified compositor settings for niri";
     provide = mkProvideContextOptions;
-    destination = mkDestination;
+    out = mkDestination;
+    includes = mkIncludes;
   };
 
   config.tessera.niri = {
     provide = {
-      # niri has at most 64 workspaces
-      workspace.empty.id = 64;
+      workspace.empty.id = 255;
     };
 
     out.target = ".config/niri/config.kdl";
@@ -60,56 +63,69 @@ in
             body = lib.flip lib.mapAttrsToList actions (
               name: praw:
               let
-                param = if lib.isFunction praw then praw { new-workspace-id = 255; } else praw;
+                param = applyProvides praw niri-cfg.provide;
               in
               match name {
                 spawn = n "spawn-sh" param;
-                focus-workspace = n "focus-workspace" param;
-                focus-window-relative = match param {
+
+                workspace-switch = n "focus-workspace" param;
+
+                window-focus = match param {
                   Left = n "focus-column-left";
                   Right = n "focus-column-right";
                   Up = n "focus-window-up";
                   Down = n "focus-window-down";
                 };
-                move-window-relative = match param {
+
+                window-move = match param {
                   Left = n "move-column-left";
                   Right = n "move-column-right";
                   Up = n "move-window-up";
                   Down = n "move-window-down";
                 };
-                move-workspace-relative = match param {
+
+                window-move-to-workspace = n "move-column-to-workspace" param;
+
+                workspace-move = match param {
                   Left = n "spawn" "notify-send" "Cannot Move Workspace Left!";
                   Right = n "spawn" "notify-send" "Cannot Move Workspace Right!";
                   Up = n "move-workspace-up";
                   Down = n "move-workspace-down";
                 };
-                move-window-to-workspace = n "move-column-to-workspace" param;
-                screenshot = n "screenshot";
-                close-window = n "close-window";
-                quit = n "quit";
-                maximize = n "maximize-column";
-                fullscreen = n "fullscreen-window";
-                resize-preset = n "switch-preset-column-width";
-                show-help = n "show-hotkey-overlay";
-                toggle-window-floating = n "toggle-window-floating";
 
-                toggle-window-pinned = n "spawn" "notify-send" "niri does not support pinning windows";
-
-                toggle-column-tabbed = n "toggle-column-tabbed-display";
-
-                focus-column-tab-relative = match param {
+                column-focus-tab = match param {
                   Previous = n "focus-window-up";
                   Next = n "focus-window-down";
                 };
 
-                focus-workspace-relative = match param {
+                workspace-focus = match param {
                   Previous = n "focus-workspace-up";
                   Next = n "focus-workspace-down";
                 };
 
-                toggle-window-scratchpad = n "spawn" "notify-send" "niri does not support scratchpads";
+                window-close = n "close-window";
 
-                toggle-scratchpad = n "spawn" "notify-send" "niri does not support scratchpads";
+                session-quit = n "quit";
+
+                window-toggle-maximize = n "maximize-column";
+
+                window-toggle-fullscreen = n "fullscreen-window";
+
+                window-cycle-primary-extent = n "switch-preset-column-width";
+
+                cheatsheet-toggle = n "show-hotkey-overlay";
+
+                window-toggle-floating = n "toggle-window-floating";
+
+                window-toggle-pinned = n "spawn" "notify-send" "niri does not support pinning windows";
+
+                column-toggle-tabbed = n "toggle-column-tabbed-display";
+
+                window-toggle-scratchpad = n "spawn" "notify-send" "niri does not support scratchpads";
+
+                scratchpad-toggle = n "spawn" "notify-send" "niri does not support scratchpads";
+
+                screenshot = n "screenshot";
 
                 # fallback
                 "default" = throw (builtins.trace param "${name} not implemented");
@@ -121,7 +137,7 @@ in
       in
       kdl.formats.v1 (
         lib.flatten [
-          (rmap cfg.spawn-at-startup (n "spawn-sh-at-startup"))
+          (rmap cfg.general.autostart (n "spawn-sh-at-startup"))
           (lib.mkIf (cfg.environment != { }) (
             n "environment" (lib.mapAttrsToList (name: value: n name value) cfg.environment)
           ))
@@ -137,6 +153,7 @@ in
           (n "layout" [
             (n "preset-column-widths" (map (n "proportion") cfg.layout.preset-column-widths))
           ])
+          (rmap niri-cfg.includes (item: n "include" { optional = item.optional; } item.source))
         ]
       );
   };

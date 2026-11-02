@@ -2,6 +2,10 @@
 let
   types = (import ../lib/types.nix { inherit lib; });
 
+  # Action names are umbriel's `umbriel msg` actions, in object-verb form:
+  # `window.focus(left)` is written `window-focus = "left"`. Actions that
+  # umbriel splits into several commands (`window-focus-left`, …) take the
+  # direction/step as their payload instead.
   actions =
     (lib.mapAttrs (
       _:
@@ -10,131 +14,146 @@ let
         attrs
         // {
           type = (lib.types.either type (lib.types.functionTo type)) // {
-            description = "X, or a function that takes the context and returns X, where X = ${type.description}";
+            description = "the literal or a function that returns the literal, ${type.description}";
           };
         }
       )
     ))
       {
+        # Apps
         spawn = {
+          type = lib.types.str;
           description = ''
             spawn command.
           '';
-          type = lib.types.str;
         };
-        focus-workspace = {
-          description = ''
-            focus workspace by id
-          '';
-          type = types.workspace-id;
-        };
-        focus-window-relative = {
-          description = ''
-            focus window by direction
-          '';
+
+        # Focus
+        window-focus = {
           type = types.direction;
-        };
-        move-window-relative = {
           description = ''
-            move window by direction
+            focus the window in the given direction
           '';
-          type = types.direction;
         };
-        move-window-to-workspace = {
-          description = ''
-            move window to workspace by id
-          '';
-          type = types.workspace-id;
-        };
-        move-workspace-relative = {
-          description = ''
-            move workspace by direction
-          '';
-          type = types.workspace-id;
-        };
-        screenshot = {
-          description = ''
-            take a screenshot
-          '';
-          type = types.unit;
-        };
-        close-window = {
-          description = ''
-            close the focused window
-          '';
-          type = types.unit;
-        };
-        quit = {
-          description = ''
-            quit shell
-          '';
-          type = types.unit;
-        };
-        maximize = {
-          description = ''
-            maximize the window
-          '';
-          type = types.unit;
-        };
-        fullscreen = {
-          description = ''
-            fullscreen the window
-          '';
-          type = types.unit;
-        };
-        resize-preset = {
-          description = ''
-            resize the window
-          '';
-          type = types.unit;
-        };
-        show-help = {
-          description = ''
-            show help of commands
-          '';
-          type = types.unit;
-        };
-        toggle-window-floating = {
-          description = ''
-            toggle floating
-          '';
-          type = types.unit;
-        };
-        toggle-window-pinned = {
-          description = ''
-            Pin the focused window above other windows
-          '';
-          type = types.unit;
-        };
-        toggle-column-tabbed = {
-          description = ''
-            Tab the rows around the focused window, or stack its tabs
-          '';
-          type = types.unit;
-        };
-        focus-column-tab-relative = {
+        column-focus-tab = {
+          type = types.step;
           description = ''
             Focus the previous or next tab in the focused tab group
           '';
-          type = types.step;
         };
-        focus-workspace-relative = {
+        workspace-focus = {
+          type = types.step;
           description = ''
             Switch to the previous or next workspace on this output
           '';
-          type = types.step;
         };
-        toggle-window-scratchpad = {
+
+        # Move & size
+        window-move = {
+          type = types.direction;
+          description = ''
+            move the focused window in the given direction
+          '';
+        };
+        window-move-to-workspace = {
+          type = types.workspace-id;
+          description = ''
+            move window to workspace by id
+          '';
+        };
+        workspace-move = {
+          type = types.direction;
+          description = ''
+            move workspace by direction
+          '';
+        };
+        window-cycle-primary-extent = {
+          type = types.unit;
+          description = ''
+            resize the window
+          '';
+        };
+
+        # Windows
+        window-close = {
+          type = types.unit;
+          description = ''
+            close the focused window
+          '';
+        };
+        window-toggle-floating = {
+          type = types.unit;
+          description = ''
+            toggle floating
+          '';
+        };
+        window-toggle-maximize = {
+          type = types.unit;
+          description = ''
+            maximize the window
+          '';
+        };
+        window-toggle-fullscreen = {
+          type = types.unit;
+          description = ''
+            fullscreen the window
+          '';
+        };
+        window-toggle-pinned = {
+          type = types.unit;
+          description = ''
+            Pin the focused window above other windows
+          '';
+        };
+        column-toggle-tabbed = {
+          type = types.unit;
+          description = ''
+            Tab the rows around the focused window, or stack its tabs
+          '';
+        };
+
+        # Scratchpad
+        window-toggle-scratchpad = {
+          type = types.unit;
           description = ''
             Move the focused window to or from a scratchpad
           '';
-          type = types.unit;
         };
-        toggle-scratchpad = {
+        scratchpad-toggle = {
+          type = types.unit;
           description = ''
             Show or hide the selected scratchpad windows
           '';
+        };
+
+        # Workspaces
+        workspace-switch = {
+          type = types.workspace-id;
+          description = ''
+            focus workspace by id
+          '';
+        };
+
+        # System
+        cheatsheet-toggle = {
           type = types.unit;
+          description = ''
+            show help of commands
+          '';
+        };
+        session-quit = {
+          type = types.unit;
+          description = ''
+            quit shell
+          '';
+        };
+
+        # tessera extension: not an umbriel action, rendered by each backend.
+        screenshot = {
+          type = types.unit;
+          description = ''
+            take a screenshot
+          '';
         };
       };
 in

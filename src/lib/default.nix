@@ -21,18 +21,50 @@ in
     );
   };
 
-  mkDestination = {
-    target = lib.mkOption {
-      description = "The path of the result config file for ${name}. Path to target file relative to HOME.";
-      type = lib.types.str;
-    };
-    text = lib.mkOption {
-      description = "The content of the result config file for ${name}. ";
-      type = lib.nullOr lib.types.lines;
-    };
-    source = lib.mkOption {
-      description = "The source of the result config file for ${name}.";
-      type = lib.types.str;
-    };
+  mkDestination = lib.mkOption {
+    type = lib.types.submodule (
+      { config, pkgs, ... }: {
+        options = {
+          target = lib.mkOption {
+            description = "The path of the result config file for ${name}. Path to target file relative to HOME.";
+            type = lib.types.str;
+          };
+          text = lib.mkOption {
+            description = "The content of the result config file for ${name}. ";
+            type = lib.types.nullOr lib.types.lines;
+            default = null;
+          };
+          source = lib.mkOption {
+            description = "The source of the result config file for ${name}.";
+            type = lib.types.path;
+            default = pkgs.writeText "tessera-${name}-config" config.text;
+          };
+        };
+      }
+    );
   };
+
+  mkIncludes = lib.mkOption {
+    description = "Include additional config files for ${name}.";
+    type = lib.types.listOf (
+      lib.types.submodule (
+        { ... }: {
+          options = {
+            optional = lib.mkOption {
+              description = "if the included config file can be missing without causing an error.";
+              type = lib.types.bool;
+              default = false;
+            };
+
+            source = lib.mkOption {
+              description = "The source of the included config file for ${name}.";
+              type = lib.types.str;
+            };
+          };
+        }
+      )
+    );
+  };
+
+  applyProvides = x: params: if lib.isFunction x then x params else x;
 }
