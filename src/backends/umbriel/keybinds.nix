@@ -31,9 +31,9 @@ in
     in
     {
       action = match action {
-        spawn = "spawn:${params}";
+        spawn = "spawn ${params}";
 
-        workspace-switch = "workspace-switch:${toString params}";
+        workspace-switch = "workspace-switch ${toString params}";
 
         window-focus = "window-focus-" + (lib.strings.toLower params);
 
@@ -44,11 +44,11 @@ in
           Down = "window-move-or-workspace-down";
         };
 
-        window-move-to-workspace = "window-move-to-workspace:${toString params}";
+        window-move-to-workspace = "window-move-to-workspace ${toString params}";
 
         workspace-move = match params {
-          Left = "spawn:notify-send \"Cannot Move Workspace Left!\"";
-          Right = "spawn:notify-send \"Cannot Move Workspace Right!\"";
+          Left = "spawn notify-send \"Cannot Move Workspace Left!\"";
+          Right = "spawn notify-send \"Cannot Move Workspace Right!\"";
           Up = "workspace-move-up";
           Down = "workspace-move-down";
         };
@@ -87,7 +87,7 @@ in
 
         scratchpad-toggle = "scratchpad-toggle";
 
-        screenshot = lib.mkDefault "spawn:noctalia msg screenshot-fullscreen";
+        screenshot = lib.mkDefault "spawn noctalia msg screenshot-fullscreen";
       };
 
       allow_when_locked = allow-when-locked;
