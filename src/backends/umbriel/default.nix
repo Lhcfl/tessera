@@ -65,9 +65,10 @@ in
       include.optional.files = filterIncludes true;
 
       input = {
-        focus = {
+        focus = nonNull {
           follows_mouse = cfg.input.follow-mouse;
           follows_mouse_max_scroll = cfg.input.follow-mouse-max-scroll;
+          hover_raises = cfg.input.hover-raises;
         };
 
         cursor = nonNull (

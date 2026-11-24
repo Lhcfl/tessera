@@ -18,9 +18,31 @@ in
         "niri"
         "umbriel"
       ];
+      type = t.enum [
+        "off"
+        "sloppy"
+        "always"
+      ];
+      default = "off";
+      description = ''
+        When pointer motion moves focus.
+
+        - `off`: only clicks, keybindings and activation move focus.
+        - `sloppy`: moving the pointer onto a window focuses it, but focus given
+          elsewhere by a keybinding, a new window or an activation stays while
+          the pointer remains over its window.
+        - `always`: every pointer motion focuses the window under the pointer, and
+          so does a scene change that leaves another window under a still pointer.
+
+        niri only has a boolean `focus-follows-mouse`, so both `sloppy` and
+        `always` render as enabling it.
+      '';
+    };
+
+    hover-raises = mkNullableOption {
+      applies = [ "umbriel" ];
       type = t.bool;
-      default = false;
-      description = "Focus the window under the mouse pointer.";
+      description = "Raise a window when the pointer hovers over it.";
     };
 
     follow-mouse-max-scroll = mkOption {

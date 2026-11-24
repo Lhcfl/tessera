@@ -47,7 +47,11 @@ Home Manager 或别的文件系统抽象上。
 
 - `general.autostart`：会话启动命令，`listOf str`，backend 用 shell 执行。
 - `environment`：会话环境变量，`attrsOf str`。
-- `input.follow-mouse` / `input.follow-mouse-max-scroll` / `input.mouse-follows-focus`
+- `input.follow-mouse`（`off`/`sloppy`/`always`）/ `input.follow-mouse-max-scroll` /
+  `input.hover-raises`（仅 umbriel）/ `input.mouse-follows-focus`
+
+  `input.focus.follows_mouse` 在 umbriel 里是枚举字符串，所以 tessera 用三元枚举；
+  niri 只有布尔 `focus-follows-mouse`，`sloppy` 和 `always` 渲染结果相同。
 - `layout.preset-column-widths`：`resize-preset` 循环的宽度比例。
 - `keybinding`：`attrsWith`，键名 → `{ actions, allow-when-locked, title }`；
   `actions` 是 `attrTag`，因此**一个键恰好一个动作**，这是类型层面保证的。

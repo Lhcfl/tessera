@@ -192,7 +192,7 @@ in
         (n "input" (
           lib.flatten [
             (raw "// input settings")
-            (lib.mkIf cfg.input.follow-mouse (
+            (lib.mkIf (cfg.input.follow-mouse != "off") (
               n "focus-follows-mouse" {
                 max-scroll-amount = percentage cfg.input.follow-mouse-max-scroll;
               }
